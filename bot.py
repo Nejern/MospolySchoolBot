@@ -23,6 +23,12 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
+lessions = {'rus': 'Русский Язык',
+            'mat': 'Математика',
+            'soc': 'Обществознание',
+            'inf': 'Информатика'}
+
+
 # Команда /start
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     keyboard = [
@@ -34,6 +40,9 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             InlineKeyboardButton('Обществознание', callback_data="soc"),
             InlineKeyboardButton('Информатика', callback_data="inf")
         ],
+        [
+            InlineKeyboardButton('Выход', callback_data='exit')
+        ]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     await update.message.reply_text(
@@ -45,9 +54,46 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     query = update.callback_query
     await query.answer()
-    await query.edit_message_text(
-            f"Выбранный предмет: {query.data}"
-            )
+    if query.data != 'exit':
+        lession = lessions[query.data]
+        reply_markup = reply_markup_get(query.data)
+        await query.edit_message_text(
+            f"Выбранный предмет: {lession}",
+            reply_markup=reply_markup
+        )
+    else:
+        await update.message.text(text='Пока🖐️')
+
+
+def reply_markup_get(id):
+    if id == 'rus':
+        keybord = [
+                [
+                    InlineKeyboardButton('Задание 9', callback_data='rus-9'),
+                ],
+                [
+                    InlineKeyboardButton('Выход', callback_data='exit')
+                ]
+        ]
+    elif id == 'mat':
+        keybord = [
+                [
+                    InlineKeyboardButton('Выход', callback_data='exit')
+                ]
+        ]
+    elif id == 'soc':
+        keybord = [
+                [
+                    InlineKeyboardButton('Выход', callback_data='exit')
+                ]
+        ]
+    elif id == 'inf':
+        keybord = [
+                [
+                    InlineKeyboardButton('Выход', callback_data='exit')
+                ]
+        ]
+    return InlineKeyboardMarkup(keybord)
 
 
 def main() -> None:
